@@ -21,7 +21,7 @@ module.exports = {
         loader: 'raw'
       },
       {
-        test: /node_modules[\/\\]three[\/\\]examples[\/\\].*\.js$/,
+        test: /node_modules[\/\\]three\.js[\/\\]examples[\/\\].*\.js$/,
         loader: 'imports',
         query: {
             'THREE': 'three'
@@ -33,6 +33,9 @@ module.exports = {
     root: path.resolve(__dirname, 'src'),
     extensions: ['', '.js'],
     alias: {
+      // Additional "hop" when using three.js "from sources" (rather than from NPM registry)
+      three:         'three.js',
+
       THREE:         'three',
       PriorityQueue: 'js-priority-queue',
       'Renderer/ThreeExtented/jszip.min': 'jszip',
