@@ -25,6 +25,7 @@ define('Scene/Scene', [
     'Scene/NodeProcess',
     'Scene/Quadtree',
     'Scene/Layer',
+    'Tiles/FeatureTile',
     'Core/Geographic/CoordCarto',
     'Core/System/Capabilities',
     'MobileMapping/MobileMappingLayer'
