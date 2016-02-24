@@ -20,8 +20,9 @@ define('Scene/BoundingBoxHierarchy',[
         rootNode.enablePickingRender = function() { return true;};
         this.add(rootNode);
 
-        for(var tile in levelZeroTiles) {
-            this.createTile(tile.id, rootNode);
+        for(var i = 0; i < levelZeroTiles.length; i++) {
+            var tile = levelZeroTiles[i];
+            this.createTile(tile.id, tile.bbox, rootNode);
         }
     }
     
@@ -29,8 +30,8 @@ define('Scene/BoundingBoxHierarchy',[
 
     BoundingBoxHierarchy.prototype.constructor = BoundingBoxHierarchy;
     
-    BoundingBoxHierarchy.prototype.createTile = function(id,parent) {
-        this.interCommand.request({tileId:id},parent,this);
+    BoundingBoxHierarchy.prototype.createTile = function(id,bbox,parent) {
+        this.interCommand.request({tileId:id, bbox:bbox},parent,this);
     };    
         
    /**
@@ -38,8 +39,9 @@ define('Scene/BoundingBoxHierarchy',[
     * @param {type} node
     */
     BoundingBoxHierarchy.prototype.subdivide = function(node) {
-        for(var id in node.childrenBboxes) {
-            this.createTile(id, node);
+        for(var i = 0; i < node.childrenBboxes.length; i++) {
+            var tile = node.childrenBboxes[i];
+            this.createTile(tile.id, tile.bbox, node);
         }
     };
     

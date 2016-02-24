@@ -26,7 +26,8 @@
     "three": "^0.75.0",
     "string_format": "^0.0.6",
     "when": "^3.7.7",
-    "simd": "^2.0.0"
+    "simd": "^2.0.0",
+    "earcut": "^2.0.8"
   },
   "devDependencies": {
     "eslint": "^2.5.3",

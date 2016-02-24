@@ -1,7 +1,6 @@
 // TODO: fix comments
 
 /**
-* Generated On: 2015-10-5
 * Class: OslandiaGeometryProvider
 * Description: Provides data from a WMS stream
 */
@@ -10,6 +9,7 @@
 define('Core/Commander/Providers/OslandiaGeometryProvider',[
             'Core/Commander/Providers/Provider',
             'Core/Commander/Providers/IoDriverJSON',
+            'Core/Commander/Providers/GeoJSONToThree',
             'when',
             'Core/defaultValue',
             'THREE',
@@ -17,6 +17,7 @@ define('Core/Commander/Providers/OslandiaGeometryProvider',[
         function(
                 Provider,
                 IoDriverJSON,
+                GeoJSONToThree,
                 when,
                 defaultValue,
                 THREE,                
@@ -32,8 +33,7 @@ define('Core/Commander/Providers/OslandiaGeometryProvider',[
      * @param {String} options.height: image height (default: 256)
      * @returns {Object@call;create.url.url|String}
      */
-    function OslandiaGeometryProvider(options)
-    {
+    function OslandiaGeometryProvider(options) {
         //Constructor
  
         Provider.call( this,new IoDriverJSON());
@@ -45,7 +45,7 @@ define('Core/Commander/Providers/OslandiaGeometryProvider',[
         this.srs = defaultValue(options.srs,"");
         this.width = defaultValue(options.width, 256);
         this.height = defaultValue(options.height, 256);
-  }
+    }
 
     OslandiaGeometryProvider.prototype = Object.create( Provider.prototype );
 
@@ -57,10 +57,9 @@ define('Core/Commander/Providers/OslandiaGeometryProvider',[
      * @param {BoundingBox} bbox: requested bounding box
      * @returns {Object@call;create.url.url|String}
      */
-    OslandiaGeometryProvider.prototype.url = function(tileId)
-    {
-        var url = this.baseUrl + "?QUERY=getGeometry&CITY="+ this.layer + "&FORMAT=" + this.format +
-            "&TILE=" + tileId /*+ "&ATTRIBUTES="*/;
+    OslandiaGeometryProvider.prototype.url = function(tileId) {
+        var url = this.baseUrl + "?query=getGeometry&city="+ this.layer + "&format=" + this.format +
+            "&tile=" + tileId /*+ "&ATTRIBUTES="*/;
         return url;
     };
     
@@ -70,28 +69,31 @@ define('Core/Commander/Providers/OslandiaGeometryProvider',[
      * @param {BoundingBox} bbox: requested bounding box
      * @returns {WMS_Provider_L15.WMS_Provider.prototype@pro;_IoDriver@call;read@call;then}
      */
-    OslandiaGeometryProvider.prototype.getTile = function(tileId)
-    {
+    OslandiaGeometryProvider.prototype.getTile = function(tileId) {
         
-        if(tileId === undefined)
+        if(tileId === undefined) {
             return when(-2);
+        }
        
-        var url = this.url(tileId);            
-        
+        var url = this.url(tileId);
         var cachedTile = this.cache.getRessource(url);
         
-        if(cachedTile !== undefined)
+        if(cachedTile !== undefined){
             return when(cachedTile);
-        return this.ioDriver.read(url).then(function(geoJSON)
-        {
+        }
+        return this._IoDriver.read(url).then(function(geoJSON) {
             var result = {};
+            result.bboxes = geoJSON.tiles;
+
             result.geometries = [];
-            result.bboxes = [];
-            console.log(geoJSON);
-                        
-            this.cache.addRessource(url,result.texture);
-            return result.texture;
-            
+            var geoms = GeoJSONToThree.convert(geoJSON.geometries);
+            console.log(geoms);
+            result.geometries.push(geoms[0].geometry);
+            console.log(result.geometries);
+            //result.geometries.push(new THREE.SphereGeometry(10));
+
+            this.cache.addRessource(url,result);
+            return result;
         }.bind(this));
     };
     
