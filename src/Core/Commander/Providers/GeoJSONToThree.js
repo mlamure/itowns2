@@ -15,6 +15,7 @@ define('Core/Commander/Providers/GeoJSONToThree',[
 
     GeoJSONToThree.convert = function(geoJson) {
         var geometries = [];
+        var propertiesList = [];
         for (var f = 0; f < geoJson.features.length; f++) {
             var bbox = [];
             if (geoJson.features[f].geometry.bbox.length == 6) { // 3D bounding box
@@ -39,10 +40,15 @@ define('Core/Commander/Providers/GeoJSONToThree',[
             // add properties
             var properties = JSON.stringify(geoJson.features[f].properties);
             properties.bbox = bbox;
-            geometries.push({geometry:threeGeom, properties:properties});
+            propertiesList.push(properties);
+            geometries.push(threeGeom);
+        }
+        var mergedGeom = new THREE.Geometry().fromBufferGeometry( geometries[0] );
+        for(var i = 1; i < geometries.length; i++) {
+            THREE.GeometryUtils.merge(mergedGeom, new THREE.Geometry().fromBufferGeometry( geometries[i] ));
         }
 
-        return geometries;
+        return {geometries:mergedGeom, properties:properties};
     };
 
     geomToThree = function (geom) {
