@@ -13,11 +13,13 @@ define('Tiles/FeatureTile',[
 	function FeatureTile(options){
         //Constructor
         NodeMesh.call( this );
+        console.log("new tile");
         this.boundingBox = options.boundingBox;
         this.level = defaultValue(options.level, 0);
         this.childrenBboxes = options.childrenBboxes;
         this.loaded = true;
         this.frustumCulled  = false;
+        this.divided = false;
 
         // TOOD : change center
         //this.absoluteCenter = new THREE.Vector3(0.5 * (this.boundingBox[0] + this.boundingBox[2]), 0.5 * (this.boundingBox[1] + this.boundingBox[3]), 0);
@@ -27,8 +29,12 @@ define('Tiles/FeatureTile',[
             this.geometry = options.geometries[i];
             break; // TODO : multiple features
         }
+        for(var i = 1; i < options.geometries.length; i++) {
+            var mesh = new THREE.Mesh(options.geometries[i], this.material);
+            mesh.frustumCulled = false;
+            this.add(mesh);
+        }
         this.geometry.computeBoundingSphere();
-        console.log(this.geometry.boundingSphere);
         this.centerSphere = new THREE.Vector3().addVectors(this.geometry.boundingSphere.center, this.absoluteCenter);
     }
 

@@ -72,12 +72,11 @@ define('Core/Commander/Providers/GeoJSONToThree',[
         nPoints += coords[t][0].length - 2 - 1;
     }
     // Note: the memory allocation doesn't take into account degenerate geometries
-    var position = new Float32Array(3*nPoints);
+    var position = new Float32Array(9*nPoints);
     var normal = new Float32Array(position.length);
     var centroid = [0,0,0];
     var radius = 0;
     var center = new Float32Array(3);
-    var polygons = [];
     
     var posCount = 0;
 
@@ -105,7 +104,7 @@ define('Core/Commander/Providers/GeoJSONToThree',[
             positionPolygon[3 * (v - delta) + 1] = coords[t][0][v][1];
             positionPolygon[3 * (v - delta) + 2] = coords[t][0][v][2];
         }
-        // removing some of the degenerated polyogns (2 points or less)
+        // removing some of the degenerated polygons (2 points or less)
         if(positionPolygon.length < 9) continue;
         var vect1 = [positionPolygon[3] - positionPolygon[0],
                      positionPolygon[4] - positionPolygon[1],
@@ -176,7 +175,6 @@ define('Core/Commander/Providers/GeoJSONToThree',[
             centroid[2] += position[i+2];
             posCount++;
         }
-        polygons.push(positionPolygon);
     }
     centroid = mult(centroid, 1.0/ posCount);
     for (i=0; i<3; i++) center[i] = centroid[i];
@@ -196,11 +194,15 @@ define('Core/Commander/Providers/GeoJSONToThree',[
                   [position[t  ], position[t+1],position[t+2]]);
         N = cross(U, V);
         N = mult(N, 1.0/norm(N));
-        for (i=0; i<9; i++) normal[t+i] = N[i%3];
+        for (i=0; i<9; i++) {
+            normal[t+i] = N[i%3];
+        }
     }
-    for(; t < position.length; t+=9) { // fill unused buffer space with valid normals
+    for(; t < position.length*3; t+=9) { // fill unused buffer space with valid normals
         N = [1.0,0.0,0.0];
-        for (i=0; i<9; i++) normal[t+i] = N[i%3];        
+        for (i=0; i<9; i++) {
+            normal[t+i] = N[i%3];        
+        }
     }
 
     return {

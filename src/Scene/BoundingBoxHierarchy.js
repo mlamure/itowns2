@@ -39,6 +39,7 @@ define('Scene/BoundingBoxHierarchy',[
     * @param {type} node
     */
     BoundingBoxHierarchy.prototype.subdivide = function(node) {
+        node.divided = true;
         for(var i = 0; i < node.childrenBboxes.length; i++) {
             var tile = node.childrenBboxes[i];
             this.createTile(tile.id, tile.bbox, node);
