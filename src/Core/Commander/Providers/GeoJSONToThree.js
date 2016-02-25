@@ -70,8 +70,7 @@ define('Core/Commander/Providers/GeoJSONToThree',[
 
     geomFromPolyhedralSurface = function(coords) {
     var t,v,i,j;
-    var U, V, N, Utex, Vtex;
-    var nrm;
+    var U, V, N;
     var nPoints = 0;
     for (t = 0; t < coords.length; t++) {
         // polygon with n points = n - 2 triangles - 1 because of duplicate first point

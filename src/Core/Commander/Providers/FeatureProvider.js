@@ -40,7 +40,7 @@ define('Core/Commander/Providers/FeatureProvider',[
         var bboxId = command.paramsFunction.tileId;
         var bbox = command.paramsFunction.bbox;
         var parent = command.requester;
-        var options = {boundingBox: bbox};
+        var options = {bboxId: bboxId, boundingBox: bbox};
         //var tile        = new command.type(options);
         
         //var translate   = new THREE.Vector3(bbox[0], bbox[1], 0);

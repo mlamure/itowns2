@@ -67,8 +67,8 @@ define('Scene/NodeProcess', ['Scene/BoundingBox', 'Renderer/Camera', 'Core/Math/
      * @returns {unresolved}
      */
     NodeProcess.prototype.frustumCulling = function(node, camera) {
-        var frustum = camera.frustum;
-
+        this.camera.setPosition(camera.position().clone().sub(node.absoluteCenter));
+        var frustum = this.camera.frustum;
         return frustum.intersectsObject(node);
     };
 

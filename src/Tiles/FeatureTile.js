@@ -6,33 +6,24 @@
 
 define('Tiles/FeatureTile',[
 	'Core/defaultValue',
+    'Scene/BoundingBox',
 	'Renderer/NodeMesh',
     'Renderer/BasicMaterial',
-    'THREE'], function(defaultValue, NodeMesh, BasicMaterial, THREE){
+    'THREE'], function(defaultValue, BoundingBox, NodeMesh, BasicMaterial, THREE){
 
 	function FeatureTile(options){
         //Constructor
         NodeMesh.call( this );
-        this.boundingBox = options.boundingBox;
-        this.level = defaultValue(options.level, 0);
+        this.bboxId = options.bboxId;
+        this.bbox = new BoundingBox(options.boundingBox[0], options.boundingBox[2],
+            options.boundingBox[1], options.boundingBox[3]);
         this.childrenBboxes = options.childrenBboxes;
         this.loaded = true;
         this.frustumCulled  = false;
         this.divided = false;
 
-        // TOOD : change center
-        //this.absoluteCenter = new THREE.Vector3(0.5 * (this.boundingBox[0] + this.boundingBox[2]), 0.5 * (this.boundingBox[1] + this.boundingBox[3]), 0);
-        this.absoluteCenter = new THREE.Vector3(this.boundingBox[0], this.boundingBox[1], -160);
-        this.material = new BasicMaterial(new THREE.Color(0.8,0,0));
-        /*for(var i = 0; i < options.geometries.length; i++) {
-            this.geometry = options.geometries[i];
-            break; // TODO : multiple features
-        }
-        for(var i = 1; i < options.geometries.length; i++) {
-            var mesh = new THREE.Mesh(options.geometries[i], this.material);
-            mesh.frustumCulled = false;
-            this.add(mesh);
-        }*/
+        this.absoluteCenter = new THREE.Vector3(options.boundingBox[0], options.boundingBox[1], 0);
+        this.material = new BasicMaterial(new THREE.Color(0.8,0.8,0.8));
         this.geometry = options.geometries;
         this.geometry.computeBoundingSphere();
         this.centerSphere = new THREE.Vector3().addVectors(this.geometry.boundingSphere.center, this.absoluteCenter);

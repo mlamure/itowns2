@@ -88,10 +88,6 @@ define('Core/Commander/Providers/OslandiaGeometryProvider',[
             result.geometries = [];
             var geoms = GeoJSONToThree.convert(geoJSON.geometries);
             result.geometries = geoms.geometries;
-            /*for(var i = 0; i < geoms.length; i++) {
-                result.geometries.push(geoms[i].geometry);
-                // TODO: add geoms[i].properties
-            }*/
 
             this.cache.addRessource(url,result);
             return result;

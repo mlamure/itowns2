@@ -27,7 +27,7 @@ void main()
   else
         gl_Position = mVPMatRTC * vec4( position ,1.0 );
 
-    float h  = max(0.05,(1.0 - min(position.y / 50.0,1.0)));
+    float h  = 1.0;//max(0.05,(1.0 - min(position.y / 50.0,1.0)));
     
     light    =   h / max(0.25,dot(dir,normal));
 
