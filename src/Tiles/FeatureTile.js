@@ -21,6 +21,9 @@ define('Tiles/FeatureTile',[
         this.loaded = true;
         this.frustumCulled  = false;
         this.divided = false;
+        this.geometricError = ((options.boundingBox[2] - options.boundingBox[0]) +
+            (options.boundingBox[3] - options.boundingBox[1])) / 1000.;
+        // TODO: geometric error doesn't really make sense in our case
 
         this.absoluteCenter = new THREE.Vector3(options.boundingBox[0], options.boundingBox[1], 0);
         this.material = new BasicMaterial(new THREE.Color(0.8,0.8,0.8));
