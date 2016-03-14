@@ -26,7 +26,10 @@ requirejs.config({
         'OBB'           : "Renderer/ThreeExtented/OBB",
         'OBBHelper'     : "Renderer/ThreeExtented/OBBHelper",
         'JSZip'         : "Renderer/ThreeExtented/jszip.min",
-        'ColladaLoader' : "Renderer/ThreeExtented/ColladaLoader",        
+        'ColladaLoader' : "Renderer/ThreeExtented/ColladaLoader",
+        'glTFLoader'    : "Renderer/ThreeExtented/glTFLoader",       
+        'glTFParser'    : "Renderer/ThreeExtented/glTF-parser",
+        'glTFLoaderUtils' : "Renderer/ThreeExtented/glTFLoaderUtils",
         'SphereHelper'  : "Renderer/ThreeExtented/SphereHelper"
         
     },
@@ -81,6 +84,15 @@ requirejs.config({
             deps: ['THREE']
         },
         ColladaLoader: {
+            deps: ['THREE']
+        },
+        glTFParser: {
+            deps: ['THREE']
+        },
+        glTFLoaderUtils: {
+            deps: ['THREE']
+        },
+        glTFLoader: {
             deps: ['THREE']
         }
     },

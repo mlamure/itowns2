@@ -53,10 +53,10 @@ define('Core/Commander/Providers/KML_Provider',[
                 if(result === undefined)
                     return undefined;
                                 
-                var child       = result.scene.children[0];               
+                var child       = result.scene.children[0];   
                 var coorCarto   = result.coorCarto;
                 var position    = this.ellipsoid.cartographicToCartesian(coorCarto);   
-                coorCarto.altitude = 0;        
+                coorCarto.altitude = 0;   
                 var normal      = this.ellipsoid.geodeticSurfaceNormalCartographic(coorCarto);
 
                 var quaternion  = new THREE.Quaternion();

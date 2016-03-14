@@ -18,6 +18,7 @@
 define('Core/Commander/ManagerCommands',
         [               
             'Core/Commander/Providers/tileGlobeProvider',
+            'Core/Commander/Providers/gLTFProvider',
             'Core/Commander/Interfaces/EventsManager',
             'PriorityQueue',
             'when',
@@ -27,6 +28,7 @@ define('Core/Commander/ManagerCommands',
         ], 
         function(
                 tileGlobeProvider,
+                gLTFProvider,
                 EventsManager,
                 PriorityQueue,
                 when,
@@ -50,8 +52,10 @@ define('Core/Commander/ManagerCommands',
         this.history        = null;               
         this.eventsManager  = new EventsManager();       
         this.scene          = undefined;
+        this.providerGLTF    = new gLTFProvider();
+               
+    }    
 
-    }        
 
     ManagerCommands.prototype.constructor = ManagerCommands;
 
@@ -62,24 +66,27 @@ define('Core/Commander/ManagerCommands',
     
     ManagerCommands.prototype.init = function(scene)
     {
-        this.scene = scene;       
+        this.scene = scene;
+
+        /*
+        var testProv = new gLTFProvider();
+        testProv.get('http://localhost/cesium_bis/Apps/duck.json').then(function(result){
+
+            var child = result.scene.children[0];
+            coordCarto = new CoordCarto().setFromDegreeGeo(0,0,10000000);
+            result.scene.position.z = 1000000;
+            result.scene.children[0].coorCarto = coordCarto;
+            scene.gfxEngine.scene3D.add(result.scene.children[0]);
+            console.log(result.scene.children[0]);
+        });
+        */
     };
     
     ManagerCommands.prototype.createProvider = function(type,param)
     {               
         if(type === EllipsoidTileMesh)
         {                       
-            this.providers.push(new tileGlobeProvider(param));
-            
-//            var latitude    = 48.850077; 
-//            var  longitude  = 2.384618;
-//                
-//            this.providers[0].providerKML.loadKMZ(longitude, latitude).then(function (result){
-//
-//                
-//                this.scene.gfxEngine.scene3D.add(result);
-// 
-//            }.bind(this));
+            this.providers.push(new tileGlobeProvider(param));           
         }
     };
         
