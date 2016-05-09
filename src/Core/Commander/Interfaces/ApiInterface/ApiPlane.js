@@ -9,22 +9,30 @@ define('Core/Commander/Interfaces/ApiInterface/ApiPlane', [
        'Core/Commander/Interfaces/EventsManager',
        'Scene/Scene',
        'Plane/PlanarNodeProcess',
+       'Tiles/PlanarTileNodeProcess',
        'Globe/Globe',
        'Core/Commander/Providers/WMTS_Provider',
        'Core/Geographic/CoordCarto',
        'Core/Geographic/Projection',
        'Core/Commander/Providers/TileProvider',
-   //TEMP
+       //TEMP
+       'Core/Commander/Providers/FeatureProvider',
+       'Tiles/FeatureTile',
+       'Scene/BoundingBoxHierarchy',
        'Scene/BoundingBox',
        'Plane/Plane'], function(
            EventsManager,
            Scene,
            PlanarNodeProcess,
+           PlanarTileNodeProcess,
            Globe,
            WMTS_Provider,
            CoordCarto,
            Projection,
            TileProvider,
+           FeatureProvider,
+           FeatureTile,
+           BoundingBoxHierarchy,
            BoundingBox,
            Plane) {
 
@@ -101,10 +109,19 @@ define('Core/Commander/Interfaces/ApiInterface/ApiPlane', [
 
         //var map = new Globe(this.scene.size,gLDebug);
         var map = new Plane({bbox: new BoundingBox(1837816.94334, 1847692.32501, 5170036.4587, 5178412.82698)});
-        np = new PlanarNodeProcess();
+        var np = new PlanarNodeProcess();
+        var tnp = new PlanarTileNodeProcess();
 
         this.scene.add(map, np);
         this.scene.managerCommand.addLayer(map.tiles, new TileProvider({ellipsoid: map.ellipsoid, gLDebug: gLDebug}));
+
+
+        //var lvl0bbox = [{id:"0/2/2", bbox:[1841670.22052,5173987.91682,1843851.84595,5176096.53674]}];
+        var lvl0bbox = [{id:"0/1/4",bbox:[1845740.82505,5171978.17265,1847591.88989,5174128.65401]},{id:"0/1/0",bbox:[1837860.98027,5173155.88142,1839705.26255,5174262.62047]},{id:"0/1/1",bbox:[1839696.36526,5171941.91967,1841897.85247,5174285.91092]},{id:"0/1/2",bbox:[1841708.09015,5171921.3019,1843874.66359,5174094.16246]},{id:"0/1/3",bbox:[1843737.06688,5171802.20032,1845902.48552,5174128.62589]},{id:"0/0/4",bbox:[1845762.45189,5170806.14803,1846940.04207,5172229.45668]},{id:"0/0/1",bbox:[1841438.76568,5171682.70222,1841565.80615,5172014.45009]},{id:"0/0/3",bbox:[1843724.93684,5170411.04828,1846053.80175,5172267.49646]},{id:"0/0/2",bbox:[1841785.73131,5170303.26842,1843864.94833,5172174.32728]},{id:"0/2/3",bbox:[1843749.53408,5173911.40267,1846022.29786,5176061.92588]},{id:"0/2/2",bbox:[1841663.99809,5173984.25176,1843851.84595,5176096.53674]},{id:"0/2/1",bbox:[1839574.05873,5173716.06149,1842054.89113,5176191.39531]},{id:"0/2/0",bbox:[1838645.50709,5174015.88478,1839892.64343,5176059.28511]},{id:"0/2/4",bbox:[1845704.28672,5173955.27624,1847648.66845,5174872.51449]},{id:"0/3/2",bbox:[1841798.00299,5175994.25753,1843854.97253,5177629.24456]},{id:"0/3/3",bbox:[1843466.68378,5175959.17764,1844882.56823,5177744.54112]},{id:"0/3/0",bbox:[1838995.61181,5175899.99259,1839984.14871,5178124.04472]},{id:"0/3/1",bbox:[1839638.41022,5175752.29651,1841983.39523,5178145.57074]},{id:"0/4/1",bbox:[1839703.8782,5177977.15874,1841855.05949,5179908.35233]},{id:"0/4/0",bbox:[1838794.22426,5177870.60234,1839690.98937,5178253.54778]},{id:"0/4/2",bbox:[1841738.64875,5178887.63625,1842877.55355,5180280.04012]}];
+
+        var buildings = new BoundingBoxHierarchy(FeatureTile, lvl0bbox);
+        this.scene.add(buildings, tnp);
+        this.scene.managerCommand.addLayer(buildings, new FeatureProvider({srs:"EPSG:3946"}));
 
         //!\\ TEMP
         this.scene.wait(0);

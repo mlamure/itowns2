@@ -79,11 +79,11 @@ define('Renderer/LayeredMaterial', ['THREE',
         };
         this.uniforms.minHeight = {
             type: "f",
-            value: 148.0
+            value: 0.0
         };
         this.uniforms.maxHeight = {
             type: "f",
-            value: 622.0
+            value: 255.0
         };
 
         this.setUuid(id || 0);

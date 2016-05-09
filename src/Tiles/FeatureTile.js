@@ -11,59 +11,81 @@ define('Tiles/FeatureTile',[
     'Renderer/BasicMaterial',
     'THREE'], function(defaultValue, BoundingBox, NodeMesh, BasicMaterial, THREE){
 
-	function FeatureTile(options){
+	function FeatureTile(params){
         //Constructor
         NodeMesh.call( this );
-        this.bboxId = options.bboxId;
-        this.bbox = new BoundingBox(options.boundingBox[0], options.boundingBox[2],
-            options.boundingBox[1], options.boundingBox[3]);
-        this.childrenBboxes = options.childrenBboxes;
-        this.loaded = true;
-        this.frustumCulled  = false;
-        this.divided = false;
-        this.geometricError = ((options.boundingBox[2] - options.boundingBox[0]) +
-            (options.boundingBox[3] - options.boundingBox[1])) / 1000.;
+        this.bboxId = params.id;
+        this.bbox = new BoundingBox(params.bbox[0], params.bbox[2],
+            params.bbox[1], params.bbox[3]);
+		this.level = params.level;
+        this.childrenBboxes = [];
+        this.geometricError = ((params.bbox[2] - params.bbox[0]) +
+            (params.bbox[3] - params.bbox[1])) / 100;
         // TODO: geometric error doesn't really make sense in our case
 
-        this.absoluteCenter = new THREE.Vector3(options.boundingBox[0], options.boundingBox[1], 0);
         this.material = new BasicMaterial(new THREE.Color(0.8,0.8,0.8));
-        this.geometry = options.geometries;
-        this.geometry.computeBoundingSphere();
-        this.centerSphere = new THREE.Vector3().addVectors(this.geometry.boundingSphere.center, this.absoluteCenter);
+
+		this.updateGeometry = true;
     }
 
     FeatureTile.prototype = Object.create( NodeMesh.prototype );
 
     FeatureTile.prototype.constructor = FeatureTile;
 
+	FeatureTile.prototype.setGeometry = function(geometry) {
+		this.geometry = geometry;
+		this.geometry.translate(this.bbox.minCarto.longitude, this.bbox.minCarto.latitude, 0);
+        this.geometry.computeBoundingSphere();
+        this.centerSphere = this.geometry.boundingSphere.center;
+
+		this.updateGeometry = false;
+		this.cullable = true;
+	};
+
+	FeatureTile.prototype.setChildrenBoundingBoxes = function(bboxes) {
+		this.childrenBboxes = bboxes;
+	};
+
+	FeatureTile.prototype.ready = function () {
+		return !this.updateGeometry;
+	};
+
+	FeatureTile.prototype.getStatus = function () {
+		var status = [];
+		if(this.updateGeometry) {
+			status.push("geometry");
+		}
+		return status;
+	};
+
     FeatureTile.prototype.enableRTC = function(enable)
     {
         this.material.enableRTC(enable);
     };
-    
+
     FeatureTile.prototype.enablePickingRender = function(enable)
-    {           
+    {
         this.material.enablePickingRender(enable);
     };
-    
+
     FeatureTile.prototype.setFog = function(fog)
-    {                 
+    {
         this.material.setFogDistance(fog);
     };
-    
+
     FeatureTile.prototype.setMatrixRTC = function(rtc)
-    {                 
+    {
         this.material.setMatrixRTC(rtc);
     };
-    
+
     FeatureTile.prototype.setDebug = function(enable)
-    {                 
+    {
         this.material.setDebug(enable);
     };
-    
+
     FeatureTile.prototype.setSelected = function(select)
-    {                 
-        this.material.setSelected(select);        
+    {
+        this.material.setSelected(select);
     };
 
     return FeatureTile;

@@ -25,7 +25,6 @@ define('Scene/Scene', [
     'Scene/NodeProcess',
     'Scene/Quadtree',
     'Scene/Layer',
-    'Tiles/FeatureTile',
     'Core/Geographic/CoordCarto',
     'Core/System/Capabilities',
     'MobileMapping/MobileMappingLayer'
@@ -111,11 +110,13 @@ define('Scene/Scene', [
     Scene.prototype.quadTreeRequest = function(quadtree, process){
 
         this.browserScene.browse(quadtree,this.currentCamera(), process, SUBDIVISE);
+        this.browserScene.browse(this.layers[1].node,this.currentCamera(), this.layers[1].process, SUBDIVISE);
         this.managerCommand.runAllCommands().then(function()
             {
                 if (this.managerCommand.isFree())
                 {
                     this.browserScene.browse(quadtree,this.currentCamera(), process, SUBDIVISE);
+                    this.browserScene.browse(this.layers[1].node,this.currentCamera(), this.layers[1].process, SUBDIVISE);
                     if (this.managerCommand.isFree())
                         this.browserScene.browse(quadtree,this.currentCamera(), process, CLEAN);
                 }
@@ -144,6 +145,7 @@ define('Scene/Scene', [
 
             }
         }
+        this.browserScene.browse(this.layers[1].node, this.currentCamera(), this.layers[1].process, NO_SUBDIVISE); //TEMP
     };
 
     /**

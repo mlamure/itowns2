@@ -8,19 +8,19 @@
 
 define('Core/Commander/Providers/OslandiaGeometryProvider',[
             'Core/Commander/Providers/Provider',
-            'Core/Commander/Providers/IoDriverJSON',
+            'Core/Commander/Providers/IoDriver_JSON',
             'Core/Commander/Providers/GeoJSONToThree',
             'when',
             'Core/defaultValue',
             'THREE',
-            'Core/Commander/Providers/CacheRessource'], 
+            'Core/Commander/Providers/CacheRessource'],
         function(
                 Provider,
                 IoDriverJSON,
                 GeoJSONToThree,
                 when,
                 defaultValue,
-                THREE,                
+                THREE,
                 CacheRessource){
 
     /**
@@ -35,7 +35,7 @@ define('Core/Commander/Providers/OslandiaGeometryProvider',[
      */
     function OslandiaGeometryProvider(options) {
         //Constructor
- 
+
         Provider.call( this,new IoDriverJSON());
         this.cache         = CacheRessource();
 
@@ -50,8 +50,8 @@ define('Core/Commander/Providers/OslandiaGeometryProvider',[
     OslandiaGeometryProvider.prototype = Object.create( Provider.prototype );
 
     OslandiaGeometryProvider.prototype.constructor = OslandiaGeometryProvider;
-    
-  
+
+
     /**
      * Returns the url for a WMS query with the specified bounding box
      * @param {BoundingBox} bbox: requested bounding box
@@ -62,22 +62,22 @@ define('Core/Commander/Providers/OslandiaGeometryProvider',[
             "&tile=" + tileId /*+ "&ATTRIBUTES="*/;
         return url;
     };
-    
+
 
     /**
-     * Returns a texture from the WMS stream with the specified bounding box 
+     * Returns a texture from the WMS stream with the specified bounding box
      * @param {BoundingBox} bbox: requested bounding box
      * @returns {WMS_Provider_L15.WMS_Provider.prototype@pro;_IoDriver@call;read@call;then}
      */
     OslandiaGeometryProvider.prototype.getTile = function(tileId) {
-        
+
         if(tileId === undefined) {
             return when(-2);
         }
-       
+
         var url = this.url(tileId);
         var cachedTile = this.cache.getRessource(url);
-        
+
         if(cachedTile !== undefined){
             return when(cachedTile);
         }
@@ -93,7 +93,7 @@ define('Core/Commander/Providers/OslandiaGeometryProvider',[
             return result;
         }.bind(this));
     };
-    
+
     return OslandiaGeometryProvider;
-    
+
 });

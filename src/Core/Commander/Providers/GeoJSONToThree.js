@@ -6,7 +6,7 @@
 
 define('Core/Commander/Providers/GeoJSONToThree',[
             'THREE',
-            'earcut'], 
+            'earcut'],
         function(THREE, earcut) {
 
     function GeoJSONToThree() {
@@ -36,7 +36,7 @@ define('Core/Commander/Providers/GeoJSONToThree',[
             var geom = geomFromGeoJSON(type, coords);
 
             var threeGeom = geomToThree(geom);
-            
+
             // add properties
             var properties = JSON.stringify(geoJson.features[f].properties);
             properties.bbox = bbox;
@@ -45,7 +45,7 @@ define('Core/Commander/Providers/GeoJSONToThree',[
         }
         var mergedGeom = new THREE.Geometry().fromBufferGeometry( geometries[0] );
         for(var i = 1; i < geometries.length; i++) {
-            THREE.GeometryUtils.merge(mergedGeom, new THREE.Geometry().fromBufferGeometry( geometries[i] ));
+            mergedGeom.merge(new THREE.Geometry().fromBufferGeometry( geometries[i] ));
         }
 
         return {geometries:mergedGeom, properties:properties};
@@ -82,7 +82,7 @@ define('Core/Commander/Providers/GeoJSONToThree',[
     var centroid = [0,0,0];
     var radius = 0;
     var center = new Float32Array(3);
-    
+
     var posCount = 0;
 
     // set position and compute 3D centroid
@@ -90,7 +90,7 @@ define('Core/Commander/Providers/GeoJSONToThree',[
         var delta = 0;
         var positionPolygon = [];
         var positionPolygon2D = [];
-        
+
         for (v = 0; v < coords[t][0].length-1; v++){
             var duplicate = false;
             // removing duplicate points
@@ -183,7 +183,7 @@ define('Core/Commander/Providers/GeoJSONToThree',[
     }
     centroid = mult(centroid, 1.0/ posCount);
     for (i=0; i<3; i++) center[i] = centroid[i];
-   
+
     // compute radius of bounding sphere
     for (v=0; v<posCount*3; v+=3){
         radius = Math.max(radius, normsq(minus(
@@ -193,9 +193,9 @@ define('Core/Commander/Providers/GeoJSONToThree',[
 
     // compute normals
     for (t=0; t<posCount*3; t+=9){
-        U = minus([position[t+3], position[t+4],position[t+5]], 
+        U = minus([position[t+3], position[t+4],position[t+5]],
                   [position[t  ], position[t+1],position[t+2]]);
-        V = minus([position[t+6], position[t+7],position[t+8]], 
+        V = minus([position[t+6], position[t+7],position[t+8]],
                   [position[t  ], position[t+1],position[t+2]]);
         N = cross(U, V);
         N = mult(N, 1.0/norm(N));
@@ -206,7 +206,7 @@ define('Core/Commander/Providers/GeoJSONToThree',[
     for(; t < position.length*3; t+=9) { // fill unused buffer space with valid normals
         N = [1.0,0.0,0.0];
         for (i=0; i<9; i++) {
-            normal[t+i] = N[i%3];        
+            normal[t+i] = N[i%3];
         }
     }
 
@@ -239,5 +239,5 @@ define('Core/Commander/Providers/GeoJSONToThree',[
     }
 
     return GeoJSONToThree;
-    
+
 });
