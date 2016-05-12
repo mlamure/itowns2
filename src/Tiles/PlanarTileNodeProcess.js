@@ -32,7 +32,7 @@ define('Tiles/PlanarTileNodeProcess', ['Scene/BoundingBox', 'Renderer/Camera', '
 
     PlanarTileNodeProcess.prototype.checkSSE = function(node, camera) {
 
-        return camera.SSE(node) > 6.0;
+        return camera.BoxSSE(node) > 6.0;
 
     };
 
@@ -52,16 +52,14 @@ define('Tiles/PlanarTileNodeProcess', ['Scene/BoundingBox', 'Renderer/Camera', '
     };
 
     PlanarTileNodeProcess.prototype.process = function(node, camera, params) {
-        var updateType;
-        this.createCommands(node, params);
-
         node.setVisibility(false);
         node.setMaterialVisibility(false);
-        if(node.ready()) {
-            if(node.noChild()) {
-                params.tree.subdivide(node);
-            }
-            if(!this.isCulled(node, camera) && this.checkSSE(node, camera)) {
+        if(!this.isCulled(node, camera) && this.checkSSE(node, camera)) {
+            this.createCommands(node, params);
+            if(node.ready()) {
+                if(node.noChild()) {
+                    params.tree.subdivide(node);
+                }
                 node.setVisibility(true);
                 node.setMaterialVisibility(true);
             }
@@ -78,13 +76,7 @@ define('Tiles/PlanarTileNodeProcess', ['Scene/BoundingBox', 'Renderer/Camera', '
     var quaternion = new THREE.Quaternion();
 
     PlanarTileNodeProcess.prototype.frustumCulling = function(node, camera) {
-        this.camera = new Camera();
-        this.camera.camera3D = camera.camera3D.clone();
-        //this.camera.setPosition(camera.position().clone().sub(node.centerSphere));
-        // maybe a more optimised way of doing this?
-
-        var frustum = this.camera.getFrustum();
-        return frustum.intersectsObject(node);
+        return camera.getFrustum().intersectsBox(node.box3D);
     };
 
     /**

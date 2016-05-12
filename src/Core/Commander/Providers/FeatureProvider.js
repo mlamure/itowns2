@@ -27,7 +27,7 @@ define('Core/Commander/Providers/FeatureProvider',[
        //Constructor
        this.srs = options.srs;
        this.oslandiaGeometryProvider = new OslandiaGeometryProvider({url:"http://localhost/server",
-                                               layer:"lyon"});    // TODO: remove hard-coded values
+                                               layer:"lyon_lod2"});    // TODO: remove hard-coded values
        this.cacheGeometry   = [];
     }
 

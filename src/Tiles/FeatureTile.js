@@ -15,17 +15,21 @@ define('Tiles/FeatureTile',[
         //Constructor
         NodeMesh.call( this );
         this.bboxId = params.id;
-        this.bbox = new BoundingBox(params.bbox[0], params.bbox[2],
-            params.bbox[1], params.bbox[3]);
+        this.bbox = new BoundingBox(params.bbox[0], params.bbox[3],
+            params.bbox[1], params.bbox[4],
+			params.bbox[2], params.bbox[5]);
+		this.box3D = new THREE.Box3(new THREE.Vector3(params.bbox[0], params.bbox[1], params.bbox[2]),
+									new THREE.Vector3(params.bbox[3], params.bbox[4], params.bbox[5]));
 		this.level = params.level;
         this.childrenBboxes = [];
-        this.geometricError = ((params.bbox[2] - params.bbox[0]) +
-            (params.bbox[3] - params.bbox[1])) / 100;
+        this.geometricError = ((params.bbox[3] - params.bbox[0]) +
+            (params.bbox[4] - params.bbox[1])) / 100;
         // TODO: geometric error doesn't really make sense in our case
 
         this.material = new BasicMaterial(new THREE.Color(0.8,0.8,0.8));
 
 		this.updateGeometry = true;
+		this.cullable = true;
     }
 
     FeatureTile.prototype = Object.create( NodeMesh.prototype );
@@ -34,12 +38,11 @@ define('Tiles/FeatureTile',[
 
 	FeatureTile.prototype.setGeometry = function(geometry) {
 		this.geometry = geometry;
-		this.geometry.translate(this.bbox.minCarto.longitude, this.bbox.minCarto.latitude, 0);
-        this.geometry.computeBoundingSphere();
-        this.centerSphere = this.geometry.boundingSphere.center;
+		this.geometry.translate(this.box3D.min.x, this.box3D.min.y, this.box3D.min.z);
+        //this.geometry.computeBoundingSphere();
+        //this.centerSphere = this.geometry.boundingSphere.center;
 
 		this.updateGeometry = false;
-		this.cullable = true;
 	};
 
 	FeatureTile.prototype.setChildrenBoundingBoxes = function(bboxes) {

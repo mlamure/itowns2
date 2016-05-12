@@ -34,7 +34,7 @@ define('Scene/BoundingBox', [
      * @param {type} maxAltitude  : altitude maximum
      * @returns {BoundingBox_L7.BoundingBox}
      */
-    function BoundingBox(minLongitude, maxLongitude, minLatitude, maxLatitude, parentCenter, minAltitude, maxAltitude) {
+    function BoundingBox(minLongitude, maxLongitude, minLatitude, maxLatitude, minAltitude, maxAltitude) {
         //Constructor
 
         this.minCarto = new CoordCarto(defaultValue(minLongitude, 0), defaultValue(minLatitude, -MathExt.PI_OV_TWO), defaultValue(minAltitude, 0));
@@ -43,7 +43,6 @@ define('Scene/BoundingBox', [
         this.dimension = new Point2D(Math.abs(this.maxCarto.longitude - this.minCarto.longitude), Math.abs(this.maxCarto.latitude - this.minCarto.latitude));
         this.halfDimension = new Point2D(this.dimension.x * 0.5, this.dimension.y * 0.5);
         this.center = new Point2D(this.minCarto.longitude + this.halfDimension.x, this.minCarto.latitude + this.halfDimension.y);
-        //this.relativeCenter = parentCenter === undefined ? this.center : new Point2D(this.center.x - parentCenter.x,this.center.y - parentCenter.y);
         this.size = Math.sqrt(this.dimension.x * this.dimension.x + this.dimension.y * this.dimension.y);
 
     }

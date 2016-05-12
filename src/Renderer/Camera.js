@@ -106,6 +106,23 @@ define('Renderer/Camera', ['Scene/Node', 'THREE'], function(Node, THREE) {
 
     };
 
+    Camera.prototype.BoxSSE = function(node) {
+
+        var distance = node.box3D.distanceToPoint(this.camera3D.position);
+
+        // Added small oblique weight (distance is not enough, tile orientation is needed)
+        //var altiW = node.bbox.maxCarto.altitude === 10000 ? 0. : node.bbox.maxCarto.altitude / 10000.;
+        //var dotProductW = Math.min(altiW + Math.abs(this.camera3D.getWorldDirection().dot(node.centerSphere.clone().normalize())), 1.);
+
+        //var SSE = Math.sqrt(dotProductW) * this.preSSE * (node.geometricError / distance);
+        var SSE = this.preSSE * (node.geometricError / distance);
+
+        node.sse = SSE;
+
+        return SSE;
+
+    };
+
     Camera.prototype.update = function() {
         var vector = new THREE.Vector3(0, 0, 1);
 
