@@ -127,12 +127,15 @@ define('Renderer/ThreeExtented/FlatCameraControls',[
 
 			var vector = new THREE.Vector3();
 
-			if(theta === 0)
+			if(theta === 0){
 				vector.setFromMatrixColumn(matrix, 1);
-			else
+				vector.multiplyScalar(distance);
+			}
+			else{
 				vector.set(Math.sin(theta), Math.cos(theta),0);
+				vector.multiplyScalar(- distance);
+			}
 
-			vector.multiplyScalar(distance);
 
 			panOffset.add(vector);
 		}
