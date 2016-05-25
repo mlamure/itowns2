@@ -13,7 +13,8 @@ define('Renderer/c3DEngine', [
     'Renderer/DepthMaterial',
     'Renderer/BasicMaterial',
     'Globe/Atmosphere',
-    'Core/System/Capabilities'
+    'Core/System/Capabilities',
+    'Renderer/ThreeExtented/FlatCameraControls'
 ], function(
     THREE,
     GlobeControls,
@@ -21,7 +22,8 @@ define('Renderer/c3DEngine', [
     DepthMaterial,
     BasicMaterial,
     Atmosphere,
-    Capabilities) {
+    Capabilities,
+    FlatCameraControls) {
 
     var instance3DEngine = null;
 
@@ -88,7 +90,7 @@ define('Renderer/c3DEngine', [
     console.log(decode32(v.toArray()),parseFloat2(0x800000));
     */
 
-THREE.OrbitControls = require('three-orbit-controls')(THREE);
+    THREE.OrbitControls = require('three-orbit-controls')(THREE);
 
     function c3DEngine(scene, positionCamera, debugMode, gLDebug) {
         //Constructor
@@ -122,15 +124,15 @@ THREE.OrbitControls = require('three-orbit-controls')(THREE);
 
         }
 
-        var material = new BasicMaterial(new THREE.Color(1, 0, 0));
-        var material2 = new BasicMaterial(new THREE.Color(0, 0, 1));
-        var geometry = new THREE.CylinderGeometry(0.6, 0.01, 2, 32);
+        var material    = new BasicMaterial(new THREE.Color(1, 0, 0));
+        var material2   = new BasicMaterial(new THREE.Color(0, 0, 1));
+        var geometry    = new THREE.CylinderGeometry(0.6, 0.01, 2, 32);
         //var geometry = new THREE.SphereGeometry(0.6);
         this.dummy_01 = new THREE.Mesh(geometry, material);
         this.dummy_02 = new THREE.Mesh(geometry, material2);
 
-        this.dummy_02.material.enableRTC(false);
         this.dummy_01.material.enableRTC(false);
+        this.dummy_02.material.enableRTC(false);
 
         this.dummys = new THREE.Object3D();
         this.dummys.add(this.dummy_01);
@@ -246,6 +248,8 @@ THREE.OrbitControls = require('three-orbit-controls')(THREE);
         //
         // Create Control
         //
+
+        //Globe controls
         /*this.controls = new THREE.GlobeControls(this.camera.camera3D, this.renderer.domElement, this);
         this.controls.target = new THREE.Vector3(0, 0, 0);
         this.controls.damping = 0.1;
@@ -256,7 +260,8 @@ THREE.OrbitControls = require('three-orbit-controls')(THREE);
         this.controls.maxDistance = this.size * 8.0;
         this.controls.keyPanSpeed = 0.01;*/
 
-        var origin = new THREE.Vector3(positionCamera.x, positionCamera.y, 300);
+        //Orbit controls
+        /*var origin = new THREE.Vector3(positionCamera.x, positionCamera.y, 300);
         this.controls = new THREE.OrbitControls(this.camera.camera3D, this.renderer.domElement);
 
         this.controls.constraint.target = origin;
@@ -269,6 +274,26 @@ THREE.OrbitControls = require('three-orbit-controls')(THREE);
         this.controls.maxDistance = 30000;
         //this.controls.keyPanSpeed   = 1.0;
         this.controls.keyPanSpeed = 0.01;
+        this.controls.update();
+
+        window.addEventListener('resize', this.onWindowResize, false);
+        this.controls.addEventListener('change', this.update);*/
+
+        //Flat controls
+        var origin = new THREE.Vector3(positionCamera.x, positionCamera.y, 450);
+
+        this.camera.camera3D.up.set(0,0,1);
+
+        this.controls = new FlatCameraControls(this.camera.camera3D, this.renderer.domElement);
+        this.controls.target = origin;
+
+        this.controls.minDistanceUp = 500;
+        this.controls.maxDistanceUp = 20000;
+        this.controls.minScale      = 1.0;
+        this.controls.maxScale      = 100.0;
+        this.controls.minZenithAngle = 0;
+        this.controls.maxZenithAngle = Math.PI / 2;
+
         this.controls.update();
 
         window.addEventListener('resize', this.onWindowResize, false);
