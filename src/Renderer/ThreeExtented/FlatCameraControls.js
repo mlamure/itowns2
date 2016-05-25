@@ -224,12 +224,14 @@ define('Renderer/ThreeExtented/FlatCameraControls',[
 
 			//Move the target to the panned location
 			scope.target.add(panOffset);
+			if((position.z + panUpOffset.z > scope.minDistanceUp) && (position.z + panUpOffset.z < scope.maxDistanceUp))
+				scope.target.add(panUpOffset);
 
 			position.copy(scope.target).add(offset);
 
 			//Handle pan up
-			if((position.z + panUpOffset.z > scope.minDistanceUp) && (position.z + panUpOffset.z < scope.maxDistanceUp))
-				position.add(panUpOffset);
+			/*if((position.z + panUpOffset.z > scope.minDistanceUp) && (position.z + panUpOffset.z < scope.maxDistanceUp))
+				position.add(panUpOffset);*/
 
 			//Always look at the target
 			scope.camera.lookAt(scope.target);
