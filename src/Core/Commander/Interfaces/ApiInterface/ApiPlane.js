@@ -9,6 +9,7 @@ define('Core/Commander/Interfaces/ApiInterface/ApiPlane', [
        'Core/Commander/Interfaces/EventsManager',
        'Scene/Scene',
        'Plane/PlanarNodeProcess',
+       'Scene/GridNodeProcess',
        'Globe/Globe',
        'Core/Commander/Providers/WMTS_Provider',
        'Core/Geographic/CoordCarto',
@@ -20,6 +21,7 @@ define('Core/Commander/Interfaces/ApiInterface/ApiPlane', [
            EventsManager,
            Scene,
            PlanarNodeProcess,
+           GridNodeProcess,
            Globe,
            WMTS_Provider,
            CoordCarto,
@@ -101,7 +103,10 @@ define('Core/Commander/Interfaces/ApiInterface/ApiPlane', [
 
         //var map = new Globe(this.scene.size,gLDebug);
         var map = new Plane({bbox: new BoundingBox(1837816.94334, 1847692.32501, 5170036.4587, 5178412.82698)});
-        np = new PlanarNodeProcess();
+        //Use of Quadtrees
+        //np = new PlanarNodeProcess();
+        //Use of a Grid
+        np = new GridNodeProcess();
 
         this.scene.add(map, np);
         this.scene.managerCommand.addLayer(map.tiles, new TileProvider({ellipsoid: map.ellipsoid, gLDebug: gLDebug}));

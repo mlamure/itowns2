@@ -8,13 +8,14 @@ define('Plane/Plane', [
     'Core/defaultValue',
     'Scene/Layer',
     'Scene/Quadtree',
+    'Scene/Grid2D',
     'Scene/SchemeTile',
     'Core/Math/MathExtented',
     'Globe/TileMesh',
     'Core/Geographic/CoordCarto',
     'Renderer/BasicMaterial',
     'THREE'
-], function(defaultValue, Layer, Quadtree, SchemeTile, MathExt,
+], function(defaultValue, Layer, Quadtree, Grid2D, SchemeTile, MathExt,
     TileMesh, CoordCarto, BasicMaterial, THREE) {
 
     function Plane(parameters, gLDebug) {
@@ -27,7 +28,13 @@ define('Plane/Plane', [
         this.batiments = new Layer();
         this.layerWGS84Zup = new Layer();
 
-        this.tiles = new Quadtree(TileMesh, this.SchemeTileWMTS(1, parameters.bbox));
+        //Use of Quadtrees
+        //this.tiles = new Quadtree(TileMesh, this.SchemeTileWMTS(1, parameters.bbox));
+
+        //Use of a grid2D
+        this.tiles = new Grid2D(TileMesh);
+        this.tiles.createGridByBoxSize(parameters.bbox, new THREE.Vector2(250, 250));
+        //this.tiles.createGridByTileNumber(parameters.bbox.minCarto, new THREE.Vector2(250, 250), 2, 1);
 
         // PROBLEM is not generic : elevationTerrain ,colorTerrain
         this.elevationTerrain = new Layer();
