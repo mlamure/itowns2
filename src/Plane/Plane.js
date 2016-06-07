@@ -11,12 +11,9 @@ define('Plane/Plane', [
     'Scene/Grid2D',
     'Scene/SchemeTile',
     'Core/Math/MathExtented',
-    'Globe/TileMesh',
-    'Core/Geographic/CoordCarto',
-    'Renderer/BasicMaterial',
-    'THREE'
+    'Globe/TileMesh'
 ], function(defaultValue, Layer, Quadtree, Grid2D, SchemeTile, MathExt,
-    TileMesh, CoordCarto, BasicMaterial, THREE) {
+    TileMesh) {
 
     function Plane(parameters, gLDebug) {
         //Constructor
@@ -29,12 +26,7 @@ define('Plane/Plane', [
         this.layerWGS84Zup = new Layer();
 
         //Use of Quadtrees
-        //this.tiles = new Quadtree(TileMesh, this.SchemeTileWMTS(1, parameters.bbox));
-
-        //Use of a grid2D
-        this.tiles = new Grid2D(TileMesh);
-        this.tiles.createGridByBoxSize(parameters.bbox, new THREE.Vector2(250, 250));
-        //this.tiles.createGridByTileNumber(parameters.bbox.minCarto, new THREE.Vector2(250, 250), 2, 1);
+        this.tiles = new Quadtree(TileMesh, this.SchemeTileWMTS(1, parameters.bbox));
 
         // PROBLEM is not generic : elevationTerrain ,colorTerrain
         this.elevationTerrain = new Layer();
