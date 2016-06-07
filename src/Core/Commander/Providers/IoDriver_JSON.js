@@ -6,31 +6,28 @@
 /* global Promise*/
 
 define('Core/Commander/Providers/IoDriver_JSON', ['Core/Commander/Providers/IoDriver'], function(IoDriver) {
-
-
     function IoDriver_JSON() {
         //Constructor
         IoDriver.call(this);
-
     }
 
     IoDriver_JSON.prototype = Object.create(IoDriver.prototype);
-
     IoDriver_JSON.prototype.constructor = IoDriver_JSON;
 
     IoDriver_JSON.prototype.read = function(url) {
-
 
         return new Promise(function(resolve, reject)
         {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", url, true);
-           // xhr.responseType = "document";
+            //xhr.responseType = "document";
             xhr.crossOrigin = '';
+            //resolve.xhr = xhr;
 
             xhr.onload = function() {
                 //resolve(this.response);
-                resolve(JSON.parse(this.response));  // limited to 1000...
+                if(this.response.length !== 0)
+                    resolve(JSON.parse(this.response));
             };
 
             xhr.onerror = function() {
@@ -39,9 +36,7 @@ define('Core/Commander/Providers/IoDriver_JSON', ['Core/Commander/Providers/IoDr
 
             xhr.send(null);
         });
-
     };
 
     return IoDriver_JSON;
-
 });
