@@ -110,11 +110,15 @@ define('Scene/Scene', [
     Scene.prototype.quadTreeRequest = function(quadtree, process){
 
         this.browserScene.browse(quadtree,this.currentCamera(), process, SUBDIVISE);
+        if(this.layers[1] !== undefined)
+            this.browserScene.browse(this.layers[1].node,this.currentCamera(), this.layers[1].process, SUBDIVISE);
         this.managerCommand.runAllCommands().then(function()
             {
                 if (this.managerCommand.isFree())
                 {
                     this.browserScene.browse(quadtree,this.currentCamera(), process, SUBDIVISE);
+                    if(this.layers[1] !== undefined)
+                        this.browserScene.browse(this.layers[1].node,this.currentCamera(), this.layers[1].process, SUBDIVISE);
                     if (this.managerCommand.isFree())
                         this.browserScene.browse(quadtree,this.currentCamera(), process, CLEAN);
                 }
@@ -143,6 +147,8 @@ define('Scene/Scene', [
 
             }
         }
+        if(this.layers[1] !== undefined)
+            this.browserScene.browse(this.layers[1].node, this.currentCamera(), this.layers[1].process, NO_SUBDIVISE); //TEMP
     };
 
     /**
