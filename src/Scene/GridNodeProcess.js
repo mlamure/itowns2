@@ -1,75 +1,82 @@
+/**
+ * Generated On: 2016-05-26
+ * Class: GridNodeProcess
+ * Description: Effectue une opération sur un node de type grid.
+ */
+
 define('Scene/GridNodeProcess',[
 	'Scene/BoundingBox',
 	'Renderer/Camera',
-	'Core/Commander/InterfaceCommander',
-	'THREE',
-	'Core/defaultValue'
-], function(BoundingBox, Camera, InterfaceCommander, THREE, defaultValue) {
+	'Core/Commander/InterfaceCommander'
+], function(BoundingBox, Camera, InterfaceCommander) {
+
 	function GridNodeProcess() {
+
 		this.camera = new Camera();
 		this.interCommand = new InterfaceCommander();
 	}
 
 	GridNodeProcess.prototype.updateCamera = function(camera) {
+
         this.camera = new Camera(camera.width, camera.height);
         this.camera.camera3D = camera.camera3D.clone();
     };
 
-	GridNodeProcess.prototype.prepare = function(camera) {
+	GridNodeProcess.prototype.prepare = function() {
 
 		//?????? Nécessaire pour la compilation du programme ??????
 	}
 
-    var quaternion = new THREE.Quaternion();
+	GridNodeProcess.prototype.frustumCulling = function(node, camera) {
 
-	GridNodeProcess.prototype.frustumCullingOBB = function(node, camera) {
-
-		this.camera = new Camera();
-		this.camera.camera3D = camera.camera3D.clone();
-		var position = node.OBB().worldToLocal(camera.position().clone());
-		this.camera.setPosition(position);
-		quaternion.multiplyQuaternions(node.OBB().quadInverse(), camera.camera3D.quaternion);
-		this.camera.setRotation(quaternion);
-
-		return this.camera.getFrustum().intersectsBox(node.OBB().box3D);
-	}
+        return camera.getFrustum().intersectsBox(node.box3D);
+    };
 
 	GridNodeProcess.prototype.isCulled = function(node, camera) {
-		return !(this.frustumCullingOBB(node, camera));
+
+		return !(this.frustumCulling(node, camera));
 	}
 
 	GridNodeProcess.prototype.checkSSE = function(node, camera) {
+
 		return camera.SSE(node) > 6.0;
 	}
 
 	GridNodeProcess.prototype.isVisible = function(node, camera) {
-		return !this.isCulled(node, camera) && this.checkSSE(node, camera);
+
+		return !this.isCulled(node, camera)/* && this.checkSSE(node, camera)*/;
 	}
 
 	GridNodeProcess.prototype.createCommands = function(node, params) {
+
 		var status = node.getStatus();
 		for(var i = 0; i < status.length; i++)
 			this.interCommand.request(status[i], node, params.tree, {});
 	}
 
+	/**
+     * Process the visibility value of the node.
+     * @param node : the node (tiles) to check.
+     * @param camera : the camera of the world.
+     * @param params : the params used to create the command request
+     */
 	GridNodeProcess.prototype.process = function(node, camera, params) {
 
-		this.createCommands(node, params);
+		node.setVisibility(false);
+		node.setMaterialVisibility(false);
 
-		node.setMaterialVisibility(true);
-
-		if(!node.ready()) {
-			node.setVisibility(false);
-			return;
-		} else {
-			if(this.isVisible(node, camera)) {
+		if(this.isVisible(node, camera)) {
+			this.createCommands(node, params);
+			if(node.ready()) {
+				node.setMaterialVisibility(true);
 				node.setVisibility(true);
-			} else {
-				node.setVisibility(false);
 			}
 		}
 	}
 
+	/**
+     * Check if the node has a children. Always false in the case of the grid.
+     */
 	GridNodeProcess.prototype.traverseChildren = function() {
 
 		return false;

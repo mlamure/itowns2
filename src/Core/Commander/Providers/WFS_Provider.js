@@ -34,19 +34,18 @@ define('Core/Commander/Providers/WFS_Provider', [
          */
         function WFS_Provider(options) {
 
-            this.cache = CacheRessource();
-            this.ioDriver_JSON = new IoDriver_JSON();
-            this.baseUrl = options.url || "";
-            this.layer = options.layer || "";
-            this.typename = options.typename || "";
-            this.format = defaultValue(options.format, "json");
-            this.epsgCode = options.epsgCode || 4326;
+            this.cache          = CacheRessource();
+            this.ioDriver_JSON  = new IoDriver_JSON();
+            this.baseUrl        = options.url || "";
+            this.layer          = options.layer || "";
+            this.typename       = options.typename || "";
+            this.format         = defaultValue(options.format, "json");
+            this.epsgCode       = options.epsgCode || 4326;
         }
 
 
         WFS_Provider.prototype = Object.create(Provider.prototype);
         WFS_Provider.prototype.constructor = WFS_Provider;
-
 
         /**
          * Returns the url for a WMS query with the specified bounding box
@@ -59,11 +58,11 @@ define('Core/Commander/Providers/WFS_Provider', [
         WFS_Provider.prototype.url = function(bbox) {
 
             var url = this.baseUrl +
-                "SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature" +
+                "?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature" +
                 "&typeName=" + this.typename + "&BBOX=" +
-                bbox.minCarto.longitude + "," + bbox.minCarto.latitude + "," +
-                bbox.maxCarto.longitude + "," + bbox.maxCarto.latitude +
-                ",epsg:"+this.epsgCode + "&outputFormat=" + this.format;
+                bbox.minCarto.latitude + "," + bbox.minCarto.longitude + "," +
+                bbox.maxCarto.latitude + "," + bbox.maxCarto.longitude +
+                "&SRSNAME=epsg:"+this.epsgCode + "&outputFormat=" + this.format;
 
             return url;
         };
@@ -76,7 +75,6 @@ define('Core/Commander/Providers/WFS_Provider', [
             var url = this.url(bbox);
             return this.ioDriver_JSON.read(url);
         };
-
 
         return WFS_Provider;
 

@@ -8,16 +8,13 @@ define('Scene/Grid2D', [
 	'Scene/Layer',
 	'Core/Geographic/Quad',
 	'Renderer/NodeMesh',
-	'Scene/BoundingBox',
-	'THREE'
-], function(Layer, Quad, NodeMesh, BoundingBox, THREE) {
-
-	var scope;
+	'Scene/BoundingBox'
+], function(Layer, Quad, NodeMesh, BoundingBox) {
 
 	function Grid2D(type) {
-		Layer.call(this, type);
+		Layer.call(this, this.tileType);
 
-		this.tileType 	= type;
+		this.tileType = type;
 
 		var rootNode	= new NodeMesh();
 		rootNode.link 	= this.link;
