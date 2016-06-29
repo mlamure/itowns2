@@ -15,12 +15,17 @@ uniform mat4       mVPMatRTC;
 uniform int        RTC;
 varying float      light;
 
+varying vec3 vColor;
+attribute vec3 color;
+
 // IE error : Initializer for const variable must initialize to a constant value
 //const vec3 dir =  normalize(vec3(1.0,1.0,0.5));
 
 void main() 
 {
   vec3 dir =  normalize(vec3(1.0,1.0,0.5));
+
+  vColor = color;
 
   if(RTC == 0)
         gl_Position = projectionMatrix * modelViewMatrix * vec4( position,  1.0 );
