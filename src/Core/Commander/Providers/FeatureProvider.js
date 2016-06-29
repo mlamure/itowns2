@@ -26,8 +26,7 @@ define('Core/Commander/Providers/FeatureProvider',[
     function FeatureProvider(options){
        //Constructor
        this.srs = options.srs;
-       this.oslandiaGeometryProvider = new OslandiaGeometryProvider({url:"http://localhost/server",
-                                               layer:"lyon_lod2"});    // TODO: remove hard-coded values
+       this.oslandiaGeometryProvider = new OslandiaGeometryProvider(options);
        this.cacheGeometry   = [];
     }
 
