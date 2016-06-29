@@ -6,10 +6,10 @@
 
 define('Core/Commander/Providers/FeatureProvider', [
 	'Core/Commander/Providers/WFS_Provider',
-	'Proj4',
+	'proj4',
 	'Scene/BoundingBox',
 	'THREE'
-], function(WFS_Provider, Proj4, BoundingBox, THREE) {
+], function(WFS_Provider, proj4, BoundingBox, THREE) {
 
 	function FeatureProvider(params) {
 
@@ -40,10 +40,10 @@ define('Core/Commander/Providers/FeatureProvider', [
 		var tile = command.requester;
 		var bbox = tile.bbox;
 
-		Proj4.defs('EPSG:3946', '+proj=lcc +lat_1=45.25 +lat_2=46.75 +lat_0=46 +lon_0=3 +x_0=1700000 +y_0=5200000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
+		proj4.defs('EPSG:3946', '+proj=lcc +lat_1=45.25 +lat_2=46.75 +lat_0=46 +lon_0=3 +x_0=1700000 +y_0=5200000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
 
-		var minCoord = Proj4('EPSG:3946').inverse([bbox.minCarto.longitude, bbox.minCarto.latitude]);
-		var maxCoord = Proj4('EPSG:3946').inverse([bbox.maxCarto.longitude, bbox.maxCarto.latitude]);
+		var minCoord = proj4('EPSG:3946').inverse([bbox.minCarto.longitude, bbox.minCarto.latitude]);
+		var maxCoord = proj4('EPSG:3946').inverse([bbox.maxCarto.longitude, bbox.maxCarto.latitude]);
 
 		var projBbox = new BoundingBox(minCoord[0], maxCoord[0], minCoord[1], maxCoord[1]);
 
