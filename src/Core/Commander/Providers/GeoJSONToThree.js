@@ -38,17 +38,26 @@ define('Core/Commander/Providers/GeoJSONToThree',[
             var threeGeom = geomToThree(geom);
 
             // add properties
-            var properties = JSON.stringify(geoJson.features[f].properties);
+            var properties = /*JSON.stringify(*/geoJson.features[f].properties/*)*/;    //Why use of stringify ??
             properties.bbox = bbox;
             propertiesList.push(properties);
             geometries.push(threeGeom);
         }
-        var mergedGeom = new THREE.Geometry().fromBufferGeometry( geometries[0] );
+        var currentGeom = new THREE.Geometry().fromBufferGeometry(geometries[0]);
+        var mergedGeom = currentGeom;
+        mergedGeom.facesId = [];
+        for (var j = 0; j < currentGeom.faces.length; j++) {
+            mergedGeom.facesId.push(propertiesList[0].gid);
+        }
         for(var i = 1; i < geometries.length; i++) {
-            mergedGeom.merge(new THREE.Geometry().fromBufferGeometry( geometries[i] ));
+            currentGeom = new THREE.Geometry().fromBufferGeometry(geometries[i]);
+            for (var j = 0; j < currentGeom.faces.length; j++) {
+                mergedGeom.facesId.push(propertiesList[i].gid);
+            }
+            mergedGeom.merge(currentGeom);
         }
 
-        return {geometries:mergedGeom, properties:properties};
+        return {geometries:mergedGeom, properties:propertiesList};
     };
 
     geomToThree = function (geom) {

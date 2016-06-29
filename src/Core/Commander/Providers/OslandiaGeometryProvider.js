@@ -45,6 +45,7 @@ define('Core/Commander/Providers/OslandiaGeometryProvider',[
         this.srs = defaultValue(options.srs,"");
         this.width = defaultValue(options.width, 256);
         this.height = defaultValue(options.height, 256);
+        this.attributesList = defaultValue(options.attributesList, []);
     }
 
     OslandiaGeometryProvider.prototype = Object.create( Provider.prototype );
@@ -59,7 +60,16 @@ define('Core/Commander/Providers/OslandiaGeometryProvider',[
      */
     OslandiaGeometryProvider.prototype.url = function(tileId) {
         var url = this.baseUrl + "?query=getGeometry&city="+ this.layer + "&format=" + this.format +
-            "&tile=" + tileId /*+ "&ATTRIBUTES="*/;
+            "&tile=" + tileId;
+
+        if(this.attributesList.length !== 0){
+            url += "&attributes=";
+            for (var i = 0; i < this.attributesList.length - 1; i++) {
+                url += this.attributesList[i] + ",";
+            }
+            url += this.attributesList[this.attributesList.length - 1];
+        }
+
         return url;
     };
 
@@ -81,17 +91,40 @@ define('Core/Commander/Providers/OslandiaGeometryProvider',[
         if(cachedTile !== undefined){
             return when(cachedTile);
         }
+        var scope = this;
         return this._IoDriver.read(url).then(function(geoJSON) {
             var result = {};
             result.bboxes = geoJSON.tiles;
 
             result.geometries = [];
             var geoms = GeoJSONToThree.convert(geoJSON.geometries);
+            geoms.geometries = scope.setColorByFaces(geoms.geometries, geoms.properties);
+            console.log(geoms);
             result.geometries = geoms.geometries;
 
             this.cache.addRessource(url,result);
             return result;
         }.bind(this));
+    };
+
+    OslandiaGeometryProvider.prototype.setColorByFaces = function(geometry, properties) {
+
+        var gid = 0;
+        var propIndex = -1;
+
+        for (var i = 0; i < geometry.faces.length; i++) {
+            if(gid !== geometry.facesId[i]){
+                gid = geometry.facesId[i];
+                propIndex ++;
+            }
+            if(properties[propIndex].remarquable === "True"){
+                geometry.faces[i].color.setHex(0xAA4499);
+                //geometry.color.push(new THREE.Color(0xAA4499));
+            } else {
+                geometry.faces[i].color.setHex(0x558844);
+            }
+        }
+        return geometry;
     };
 
     return OslandiaGeometryProvider;
