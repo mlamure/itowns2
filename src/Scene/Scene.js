@@ -22,16 +22,19 @@ define('Scene/Scene', [
     'Core/Math/Ellipsoid',
     'Renderer/PanoramicMesh',
     'Scene/BrowseTree',
+    'Scene/GridBrowseTree',
     'Scene/NodeProcess',
     'Scene/Quadtree',
+    'Scene/Grid2D',
     'Scene/Layer',
     'Core/Geographic/CoordCarto',
     'Core/System/Capabilities',
-    'MobileMapping/MobileMappingLayer'
+    'MobileMapping/MobileMappingLayer',
+    'Scene/FeatureMeshTile'
 
 ], function(c3DEngine, Globe, Plane, ManagerCommands, TileProvider,
-            PanoramicProvider, Ellipsoid, PanoramicMesh, BrowseTree, NodeProcess, Quadtree, Layer, CoordCarto,
-            Capabilities, MobileMappingLayer) {
+            PanoramicProvider, Ellipsoid, PanoramicMesh, BrowseTree, GridBrowseTree, NodeProcess, Quadtree, Grid2D, Layer, CoordCarto,
+            Capabilities, MobileMappingLayer, FeatureMeshTile) {
 
     var instanceScene = null;
 
@@ -60,6 +63,7 @@ define('Scene/Scene', [
         this.gLDebug = gLDebug;
         this.gfxEngine = c3DEngine(this,positionCamera, debugMode,gLDebug);
         this.browserScene = new BrowseTree(this.gfxEngine);
+        this.gridBrowserScene = new GridBrowseTree(this.gfxEngine);
         this.cap = new Capabilities();
 
     }
@@ -110,15 +114,13 @@ define('Scene/Scene', [
     Scene.prototype.quadTreeRequest = function(quadtree, process){
 
         this.browserScene.browse(quadtree,this.currentCamera(), process, SUBDIVISE);
-        if(this.layers[1] !== undefined)
-            this.browserScene.browse(this.layers[1].node,this.currentCamera(), this.layers[1].process, SUBDIVISE);
+        this.otherThanRootLayer(SUBDIVISE);     //TMP
         this.managerCommand.runAllCommands().then(function()
             {
                 if (this.managerCommand.isFree())
                 {
                     this.browserScene.browse(quadtree,this.currentCamera(), process, SUBDIVISE);
-                    if(this.layers[1] !== undefined)
-                        this.browserScene.browse(this.layers[1].node,this.currentCamera(), this.layers[1].process, SUBDIVISE);
+                    this.otherThanRootLayer(SUBDIVISE);     //TMP
                     if (this.managerCommand.isFree())
                         this.browserScene.browse(quadtree,this.currentCamera(), process, CLEAN);
                 }
@@ -147,8 +149,16 @@ define('Scene/Scene', [
 
             }
         }
-        if(this.layers[1] !== undefined)
-            this.browserScene.browse(this.layers[1].node, this.currentCamera(), this.layers[1].process, NO_SUBDIVISE); //TEMP
+        this.otherThanRootLayer(NO_SUBDIVISE);     //TMP
+    };
+
+    Scene.prototype.otherThanRootLayer = function(option){
+        if(this.layers[1] !== undefined){
+            if(this.layers[1].node instanceof Grid2D)
+                this.gridBrowserScene.browse(this.layers[1].node,this.currentCamera(), this.layers[1].process, option, this);
+            else
+                this.browserScene.browse(this.layers[1].node,this.currentCamera(), this.layers[1].process, option);
+        }
     };
 
     /**
@@ -201,7 +211,10 @@ define('Scene/Scene', [
         }
 
         this.layers.push({node: node, process: nodeProcess});
-        this.gfxEngine.add3DScene(node.getMesh());
+        if( node instanceof FeatureMeshTile)
+            this.gfxEngine.add3DScene(node);
+        else
+            this.gfxEngine.add3DScene(node.getMesh());
     };
 
     Scene.prototype.getMap = function()

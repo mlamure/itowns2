@@ -17,7 +17,10 @@ define('Core/Commander/Interfaces/ApiInterface/ApiPlane', [
        'Core/Commander/Providers/TileProvider',
    //TEMP
        'Scene/BoundingBox',
-       'Plane/Plane'], function(
+       'Plane/Plane',
+       'Scene/Grid2D',
+       'Scene/FeatureMeshTile',
+       'Core/Commander/Providers/FeatureProvider'], function(
            EventsManager,
            Scene,
            PlanarNodeProcess,
@@ -28,7 +31,10 @@ define('Core/Commander/Interfaces/ApiInterface/ApiPlane', [
            Projection,
            TileProvider,
            BoundingBox,
-           Plane) {
+           Plane,
+           Grid2D,
+           FeatureMeshTile,
+           FeatureProvider) {
 
     function ApiPlane() {
         //Constructor
@@ -104,12 +110,31 @@ define('Core/Commander/Interfaces/ApiInterface/ApiPlane', [
         //var map = new Globe(this.scene.size,gLDebug);
         var map = new Plane({bbox: new BoundingBox(1837816.94334, 1847692.32501, 5170036.4587, 5178412.82698)});
         //Use of Quadtrees
-        //np = new PlanarNodeProcess();
-        //Use of a Grid
-        np = new GridNodeProcess();
+        var np = new PlanarNodeProcess();
 
         this.scene.add(map, np);
         this.scene.managerCommand.addLayer(map.tiles, new TileProvider({ellipsoid: map.ellipsoid, gLDebug: gLDebug}));
+
+        var gridParams = {
+            line: {
+                color: {
+                    property: 'ligne',
+                    testTab : ['A', 'B', 'C', 'D', 'F1', 'F2'],
+                    colorTab: [0x225599, 0x5599ff, 0x147845, 0xFF5577, 0xAAFF44, 0xD7F458]
+                }
+            }
+        };
+        var gridLine = new Grid2D(FeatureMeshTile);
+        gridLine.createGridByBoxSize(new BoundingBox(1837816.94334, 1847692.32501, 5170036.4587, 5178412.82698), {x: 250, y: 250});
+
+        var tnpLine = new GridNodeProcess();
+        this.scene.add(gridLine, tnpLine);
+        this.scene.managerCommand.addLayer(gridLine, new FeatureProvider({url:'https://download.data.grandlyon.com/wfs/rdata',
+                                                                        typename: 'tcl_sytral.tcllignemf',
+                                                                        epsgCode: 3946,
+                                                                        format: 'geojson',
+                                                                        tileParams: gridParams,
+                                                                        quadtree: map.tiles}));
 
         //!\\ TEMP
         this.scene.wait(0);
